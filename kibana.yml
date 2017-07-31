@@ -1,0 +1,16 @@
+server.name: kibana
+server.host: "0"
+#elasticsearch.url: http://elasticsearch:9200
+elasticsearch.username: elastic
+elasticsearch.password: changeme
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+# tribe setup
+elasticsearch.tribe.url: http://elasticsearch5:9200
+elasticsearch.tribe.username: elastic
+elasticsearch.tribe.password: changeme
+
+# here use elasticsearch0 which is a node in the "admin" cluster
+elasticsearch.url: http://elasticsearch0:9200
+xpack.security.encryptionKey: fffffdddddddddddddddssssssssssssaaaaaaaaaaqqqqqqqqqqqq
+xpack.reporting.encryptionKey: ppppppppppppppppppweeeeeeeeeeeeeeeeeeeeeeeewwwwwwwwww
