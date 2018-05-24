@@ -1,0 +1,32 @@
+# Configuration guide:
+# https://www.elastic.co/guide/en/apm/server/6.2/configuring-howto-apm-server.html
+# Config reference:
+# https://github.com/elastic/apm-server/blob/6.2/apm-server.reference.yml
+# Forum:
+# https://discuss.elastic.co/c/apm
+
+apm-server:
+  secret_token: coynBiHeckjupFiakdewEt  # TODO: use env variable or secrets
+  ssl:
+    enabled: true
+    key: /usr/share/apm-server/certs/elastic.apm.key
+    certificate: /usr/share/apm-server/certs/elastic.apm.crt
+    # key_passphrase:
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  username: "apm"
+  password: "Ghefrojcuc"
+  #protocol: "https"
+  #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  #ssl.certificate: "/etc/pki/client/cert.pem"
+  #ssl.key: "/etc/pki/client/cert.key"
+
+setup.kibana:
+  host: "kibana:5601"
+  username: "kibanaserver"
+  password: "Dyd2Swequo"
+
+#setup.dashboards:  # apm-server setup --dashboards
+#  enabled: true
+  # more settings?

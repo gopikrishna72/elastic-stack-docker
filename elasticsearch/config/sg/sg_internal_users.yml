@@ -1,0 +1,48 @@
+# This is the internal user database
+# https://docs.search-guard.com/latest/internal-users-database
+
+# The hash value is a bcrypt hash and can be generated with
+# /usr/share/elasticsearch/plugins/search-guard-6/tools/hash.sh
+
+netquity:
+  readonly: true
+  hash: $2y$12$LSfIrHijZeFExUd0DLHO1e0gdz3wrDjMBeGSdnr91AQTRg6FPbfVm
+  roles:
+    - readall
+    - kibanauser
+
+netquity_ro:
+  readonly: true
+  hash: $2y$12$Kf7TKa9SqWh4BmtxnYFtoOWay7jjb1U0m/NjrgmI5knROSYC2IiU2
+  roles:
+    - readall
+
+admin:
+  readonly: true
+  hash: $2y$12$GZejuDuvnIuXYGHLB/yy4e8oBKagHvY6nyJZtjDr6kE9STjhKnc/S
+  roles:
+    - admin
+    - kibanauser
+
+apm:
+  readonly: true
+  hash: $2y$12$n/e9hv2GU3/ZrbaUXWzRMe9.ibJbVYS3tRcrqF.nnshSabbovZncC
+  roles:
+    - apm
+
+kibanaserver:
+  readonly: true
+  hash: $2y$12$uGmmBadVJ5s.4OVI.WsI6OyhhahH8C3kXW1Qcw.h.SP/MpqsJaOu.
+
+#password is: logstash
+#logstash:
+#  readonly: true
+#  hash: $2a$12$u1ShR4l4uBS3Uv59Pa2y5.1uQuZBrZtmNfqB3iM/.jL0XoV9sghS2
+#  roles:
+#    - logstash
+
+#password is: snapshotrestore
+#snapshotrestore:
+#  hash: $2y$12$DpwmetHKwgYnorbgdvORCenv4NAK8cPUg8AI6pxLCuWf/ALc0.v7W
+#  roles:
+#    - snapshotrestore
