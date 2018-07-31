@@ -30,7 +30,7 @@ RAM:
 
 ![Docker VM memory settings](screenshots/docker-vm-memory-settings.png)
 
-* Linux users must set the following configuration:
+* Linux users must set the following configuration as `root`:
 
 ```
 sysctl -w vm.max_map_count=262144
