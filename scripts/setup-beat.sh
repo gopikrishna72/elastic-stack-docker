@@ -5,10 +5,9 @@ set -euo pipefail
 beat=$1
 
 until curl -f -s -k http://kibana:5601; do
-    echo "Waiting for kibana..."
-    sleep 5
+	echo "Waiting for kibana..."
+	sleep 1
 done
-sleep 5
 
 chmod go-w /usr/share/$beat/$beat.yml
 
