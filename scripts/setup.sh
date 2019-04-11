@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 PW=$(openssl rand -base64 16;)
 ELASTIC_PASSWORD="${ELASTIC_PASSWORD:-$PW}"
