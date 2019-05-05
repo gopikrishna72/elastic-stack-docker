@@ -35,7 +35,9 @@ packetbeat.protocols.cassandra:
 
 
 processors:
-- add_cloud_metadata:
+  - add_cloud_metadata:
+
+keystore.path: "/usr/share/packetbeat/data/beats.keystore"
 
 output.elasticsearch:
   hosts: ['elasticsearch:9200']

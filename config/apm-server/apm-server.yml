@@ -1,6 +1,8 @@
 apm-server.frontend.enabled: true
 apm-server.host: "0.0.0.0:8200"
 
+keystore.path: "/usr/share/apm-server/data/beats.keystore"
+
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
   protocol: "https"
@@ -16,3 +18,5 @@ setup.kibana:
   protocol: "http"
   ssl.enabled: false
   ssl.certificate_authorities: ["/usr/share/apm-server/certs/ca/ca.crt"]
+
+xpack.monitoring.enabled: true

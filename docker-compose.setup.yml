@@ -54,7 +54,7 @@ services:
     command: ['/bin/bash', '-c', 'cat /usr/local/bin/setup-beat.sh | tr -d "\r" | bash -s auditbeat']
     environment: ['ELASTIC_PASSWORD=${ELASTIC_PASSWORD}']
     networks: ['stack']
-    depends_on: ['kibana']
+    depends_on: ['elasticsearch', 'kibana']
 
   setup_filebeat:
     image: docker.elastic.co/beats/filebeat:${TAG}
@@ -65,10 +65,11 @@ services:
       - './scripts/setup-beat.sh:/usr/local/bin/setup-beat.sh:ro'
       - './config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml'
       - './config/ssl/ca/ca.crt:/usr/share/filebeat/certs/ca/ca.crt'
+    command: ['/bin/bash', '-c', 'chown root:filebeat /usr/share/filebeat/filebeat.yml']
     command: ['/bin/bash', '-c', 'cat /usr/local/bin/setup-beat.sh | tr -d "\r" | bash -s filebeat']
     environment: ['ELASTIC_PASSWORD=${ELASTIC_PASSWORD}']
     networks: ['stack']
-    depends_on: ['kibana']
+    depends_on: ['elasticsearch', 'kibana']
 
   setup_heartbeat:
     image: docker.elastic.co/beats/heartbeat:${TAG}
@@ -112,6 +113,22 @@ services:
     environment: ['ELASTIC_PASSWORD=${ELASTIC_PASSWORD}']
     networks: ['stack']
     depends_on: ['kibana']
+
+  setup_journalbeat:
+    image: docker.elastic.co/beats/journalbeat:${TAG}
+    container_name: setup_journalbeat
+    user: root
+    pid: host
+    cap_add: ['AUDIT_CONTROL', 'AUDIT_READ']
+    volumes:
+      - './config:/config'
+      - './scripts/setup-beat.sh:/usr/local/bin/setup-beat.sh:ro'
+      - './config/journalbeat/journalbeat.yml:/usr/share/journalbeat/journalbeat.yml'
+      - './config/ssl/ca/ca.crt:/usr/share/journalbeat/certs/ca/ca.crt'
+    command: ['/bin/bash', '-c', 'cat /usr/local/bin/setup-beat.sh | tr -d "\r" | bash -s journalbeat']
+    environment: ['ELASTIC_PASSWORD=${ELASTIC_PASSWORD}']
+    networks: ['stack']
+    depends_on: ['elasticsearch', 'kibana']
 
   setup_apm_server:
     image: docker.elastic.co/apm/apm-server:${TAG}
