@@ -41,6 +41,10 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
 
   kibana:
     image: docker.elastic.co/kibana/kibana:${TAG}
