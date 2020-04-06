@@ -13,12 +13,14 @@ auditbeat.modules:
   - /usr/sbin
   - /etc
 
+keystore.path: "/usr/share/auditbeat/data/beats.keystore"
+
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
   protocol: "https"
   username: elastic
-  # Read PW from auditbeat.keystore
   password: "${ELASTIC_PASSWORD}"
+  # Read PW from auditbeat.keystore
   ssl.certificate_authorities: ["/usr/share/auditbeat/certs/ca/ca.crt"]
 
 setup.kibana:
@@ -30,3 +32,4 @@ setup.kibana:
   ssl.certificate_authorities: ["/usr/share/auditbeat/certs/ca/ca.crt"]
 
 xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch:

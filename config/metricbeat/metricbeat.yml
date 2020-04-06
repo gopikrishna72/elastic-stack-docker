@@ -5,6 +5,8 @@ metricbeat.config.modules:
 processors:
 - add_cloud_metadata:
 
+keystore.path: "/usr/share/metricbeat/data/beats.keystore"
+
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
   protocol: "https"

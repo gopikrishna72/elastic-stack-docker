@@ -6,7 +6,7 @@ services:
   # '.env' file in this folder. It can be overridden with any normal
   # technique for setting environment variables, for example:
   #
-  #   TAG=6.0.0-beta1 docker-compose up
+  #   TAG=7.0.0 docker-compose up
   #
   # REF: https://docs.docker.com/compose/compose-file/#variable-substitution
   #
@@ -31,7 +31,17 @@ services:
         target: /usr/share/elasticsearch/config/certs/elasticsearch/elasticsearch.key
       - source: elasticsearch.crt
         target: /usr/share/elasticsearch/config/certs/elasticsearch/elasticsearch.crt
-    ports: ['9200:9200']
+    ports: 
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      - node.name=es01
+      # - discovery.type=single-node
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01
+      - cluster.name=es-cluster01
+      # - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xmx512m -Xms512m"
     networks: ['stack']
     volumes:
       - 'es_data:/usr/share/elasticsearch/data'
@@ -94,7 +104,7 @@ services:
       - source: auditbeat.yml
         target: /usr/share/auditbeat/auditbeat.yml
       - source: auditbeat.keystore
-        target: /usr/share/auditbeat/auditbeat.keystore
+        target: /usr/share/auditbeat/data/beats.keystore
       - source: ca.crt
         target: /usr/share/auditbeat/certs/ca/ca.crt
     # Auditbeat must run in the main process namespace.
@@ -112,15 +122,17 @@ services:
   filebeat:
     image: docker.elastic.co/beats/filebeat:${TAG}
     container_name: filebeat
-    command: --strict.perms=false -e  # -e flag to log to stderr and disable syslog/file output
+    command: -e --strict.perms=false # -e flag to log to stderr and disable syslog/file output
     # If the host system has logs at "/var/log", mount them at "/mnt/log"
     # inside the container, where Filebeat can find them.
     # volumes: ['/var/log:/mnt/log:ro']
+    cap_add: ['AUDIT_CONTROL', 'AUDIT_READ']
+    #environment: ['ELASTIC_PASSWORD=${ELASTIC_PASSWORD}']
     secrets:
       - source: filebeat.yml
         target: /usr/share/filebeat/filebeat.yml
       - source: filebeat.keystore
-        target: /usr/share/filebeat/filebeat.keystore
+        target: /usr/share/filebeat/data/beats.keystore
       - source: ca.crt
         target: /usr/share/filebeat/certs/ca/ca.crt
     volumes:
@@ -137,11 +149,12 @@ services:
     image: docker.elastic.co/beats/heartbeat:${TAG}
     container_name: heartbeat
     command: --strict.perms=false -e  # -e flag to log to stderr and disable syslog/file output
+    cap_add: ['AUDIT_CONTROL', 'AUDIT_READ']    
     secrets:
       - source: heartbeat.yml
         target: /usr/share/heartbeat/heartbeat.yml
       - source: heartbeat.keystore
-        target: /usr/share/heartbeat/heartbeat.keystore
+        target: /usr/share/heartbeat/data/beats.keystore
       - source: ca.crt
         target: /usr/share/heartbeat/certs/ca/ca.crt
     volumes:
@@ -170,7 +183,7 @@ services:
       - source: metricbeat.yml
         target: /usr/share/metricbeat/metricbeat.yml
       - source: metricbeat.keystore
-        target: /usr/share/metricbeat/metricbeat.keystore
+        target: /usr/share/metricbeat/data/beats.keystore
       - source: ca.crt
         target: /usr/share/metricbeat/certs/ca/ca.crt
     volumes:
@@ -204,7 +217,7 @@ services:
       - source: packetbeat.yml
         target: /usr/share/packetbeat/packetbeat.yml
       - source: packetbeat.keystore
-        target: /usr/share/packetbeat/packetbeat.keystore
+        target: /usr/share/packetbeat/data/beats.keystore
       - source: ca.crt
         target: /usr/share/packetbeat/certs/ca/ca.crt
     volumes:
@@ -212,6 +225,29 @@ services:
     depends_on: ['elasticsearch', 'kibana']
     healthcheck:
       test: packetbeat test config
+      interval: 30s
+      timeout: 15s
+      retries: 5
+
+  journalbeat:
+    image: docker.elastic.co/beats/journalbeat:${TAG}
+    container_name: journalbeat
+    command: -e --strict.perms=false # -e flag to log to stderr and disable syslog/file output
+    cap_add: ['AUDIT_CONTROL', 'AUDIT_READ']
+    secrets:
+      - source: journalbeat.yml
+        target: /usr/share/journalbeat/journalbeat.yml
+      - source: journalbeat.keystore
+        target: /usr/share/journalbeat/data/beats.keystore
+      - source: ca.crt
+        target: /usr/share/journalbeat/certs/ca/ca.crt
+    # Journalbeat must run in the main process namespace.
+    volumes:
+      - './scripts/setup-beat.sh:/usr/local/bin/setup-beat.sh:ro'
+    networks: ['stack']
+    depends_on: ['elasticsearch', 'kibana']
+    healthcheck:
+      test: journalbeat --strict.perms=false test config
       interval: 30s
       timeout: 15s
       retries: 5
@@ -226,7 +262,7 @@ services:
       - source: apm-server.yml
         target: /usr/share/apm-server/apm-server.yml
       - source: apm-server.keystore
-        target: /usr/share/apm-server/apm-server.keystore
+        target: /usr/share/apm-server/data/beats.keystore
       - source: ca.crt
         target: /usr/share/apm-server/certs/ca/ca.crt
     volumes:
@@ -238,6 +274,7 @@ services:
       timeout: 10s
       retries: 5
 
+
 networks: {stack: {}}
 # use docker volume to persist ES data outside of a container.
 volumes:
@@ -246,12 +283,6 @@ volumes:
 secrets:
   ca.crt:
     file: ./config/ssl/ca/ca.crt
-  logstash.yml:
-    file: ./config/logstash/logstash.yml
-  logstash.keystore:
-    file: ./config/logstash/logstash.keystore
-  logstash.conf:
-    file: ./config/logstash/pipeline/logstash.conf
   elasticsearch.yml:
     file: ./config/elasticsearch/elasticsearch.yml
   elasticsearch.keystore:
@@ -270,27 +301,37 @@ secrets:
     file: ./config/kibana/kibana.key
   kibana.crt:
     file: ./config/kibana/kibana.crt
+  logstash.yml:
+    file: ./config/logstash/logstash.yml
+  logstash.keystore:
+    file: ./config/logstash/logstash.keystore
+  logstash.conf:
+    file: ./config/logstash/pipeline/logstash.conf
   auditbeat.yml:
     file: ./config/auditbeat/auditbeat.yml
   auditbeat.keystore:
-    file: ./config/auditbeat/auditbeat.keystore
+    file: ./config/auditbeat/beats.keystore
   filebeat.yml:
     file: ./config/filebeat/filebeat.yml
   filebeat.keystore:
-    file: ./config/filebeat/filebeat.keystore
+    file: ./config/filebeat/beats.keystore
   heartbeat.yml:
     file: ./config/heartbeat/heartbeat.yml
   heartbeat.keystore:
-    file: ./config/heartbeat/heartbeat.keystore
+    file: ./config/heartbeat/beats.keystore
   metricbeat.yml:
     file: ./config/metricbeat/metricbeat.yml
   metricbeat.keystore:
-    file: ./config/metricbeat/metricbeat.keystore
+    file: ./config/metricbeat/beats.keystore
   packetbeat.yml:
     file: ./config/packetbeat/packetbeat.yml
   packetbeat.keystore:
-    file: ./config/packetbeat/packetbeat.keystore
+    file: ./config/packetbeat/beats.keystore
+  journalbeat.yml:
+    file: ./config/journalbeat/journalbeat.yml
+  journalbeat.keystore:
+    file: ./config/journalbeat/beats.keystore
   apm-server.yml:
     file: ./config/apm-server/apm-server.yml
   apm-server.keystore:
-    file: ./config/apm-server/apm-server.keystore
+    file: ./config/apm-server/beats.keystore

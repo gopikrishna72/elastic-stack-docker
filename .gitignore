@@ -15,9 +15,10 @@ config/ssl/ca/ca.key
 config/ssl/docker-cluster-ca.zip
 config/ssl/docker-cluster.zip
 
-config/auditbeat/auditbeat.keystore
-config/filebeat/filebeat.keystore
-config/heartbeat/heartbeat.keystore
-config/metricbeat/metricbeat.keystore
-config/packetbeat/packetbeat.keystore
-config/apm-server/apm-server.keystore
+config/apm-server/beats.keystore
+config/auditbeat/beats.keystore
+config/filebeat/beats.keystore
+config/heartbeat/beats.keystore
+config/journalbeat/beats.keystore
+config/metricbeat/beats.keystore
+config/packetbeat/beats.keystore
