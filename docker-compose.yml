@@ -94,7 +94,7 @@ services:
       - source: auditbeat.yml
         target: /usr/share/auditbeat/auditbeat.yml
       - source: auditbeat.keystore
-        target: /usr/share/auditbeat/auditbeat.keystore
+        target: /usr/share/auditbeat/data/auditbeat.keystore
       - source: ca.crt
         target: /usr/share/auditbeat/certs/ca/ca.crt
     # Auditbeat must run in the main process namespace.
@@ -120,7 +120,7 @@ services:
       - source: filebeat.yml
         target: /usr/share/filebeat/filebeat.yml
       - source: filebeat.keystore
-        target: /usr/share/filebeat/filebeat.keystore
+        target: /usr/share/filebeat/data/filebeat.keystore
       - source: ca.crt
         target: /usr/share/filebeat/certs/ca/ca.crt
     volumes:
@@ -141,7 +141,7 @@ services:
       - source: heartbeat.yml
         target: /usr/share/heartbeat/heartbeat.yml
       - source: heartbeat.keystore
-        target: /usr/share/heartbeat/heartbeat.keystore
+        target: /usr/share/heartbeat/data/heartbeat.keystore
       - source: ca.crt
         target: /usr/share/heartbeat/certs/ca/ca.crt
     volumes:
@@ -170,7 +170,7 @@ services:
       - source: metricbeat.yml
         target: /usr/share/metricbeat/metricbeat.yml
       - source: metricbeat.keystore
-        target: /usr/share/metricbeat/metricbeat.keystore
+        target: /usr/share/metricbeat/data/metricbeat.keystore
       - source: ca.crt
         target: /usr/share/metricbeat/certs/ca/ca.crt
     volumes:
@@ -204,7 +204,7 @@ services:
       - source: packetbeat.yml
         target: /usr/share/packetbeat/packetbeat.yml
       - source: packetbeat.keystore
-        target: /usr/share/packetbeat/packetbeat.keystore
+        target: /usr/share/packetbeat/data/packetbeat.keystore
       - source: ca.crt
         target: /usr/share/packetbeat/certs/ca/ca.crt
     volumes:
@@ -226,7 +226,7 @@ services:
       - source: apm-server.yml
         target: /usr/share/apm-server/apm-server.yml
       - source: apm-server.keystore
-        target: /usr/share/apm-server/apm-server.keystore
+        target: /usr/share/apm-server/data/apm-server.keystore
       - source: ca.crt
         target: /usr/share/apm-server/certs/ca/ca.crt
     volumes:

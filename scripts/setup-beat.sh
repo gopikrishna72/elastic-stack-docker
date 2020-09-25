@@ -15,7 +15,7 @@ chmod go-w /usr/share/$beat/$beat.yml
 echo "Creating keystore..."
 # create beat keystore
 ${beat} --strict.perms=false keystore create --force
-chown 1000 /usr/share/$beat/$beat.keystore
+chown 1000 /usr/share/$beat/data/$beat.keystore
 chmod go-w /usr/share/$beat/$beat.yml
 
 echo "adding ES_PASSWORD to keystore..."
@@ -28,5 +28,5 @@ echo "Setting up dashboards..."
 ${beat} --strict.perms=false setup -v
 
 echo "Copy keystore to ./config dir"
-cp /usr/share/$beat/$beat.keystore /config/$beat/$beat.keystore
+cp /usr/share/$beat/data/$beat.keystore /config/$beat/$beat.keystore
 chown 1000:1000 /config/$beat/$beat.keystore
